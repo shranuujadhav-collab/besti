@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ffd9e8">
+  <title>A Little Secret For You 💗</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background: linear-gradient(145deg, #fff5f8, #ffe3ee, #fff8fb);
+      color: #4d2636;
+      overflow-x: hidden;
+    }
+
+    /* ---------- Screens ---------- */
+    .screen {
+      display: none;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 22px 16px;
+      text-align: center;
+    }
+    .screen.active { display: flex; }
+
+    .card {
+      width: min(520px, 100%);
+      padding: 28px 18px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 15px 50px rgba(122, 53, 82, 0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    /* ---------- Typography ---------- */
+    h1 { font-size: clamp(28px, 8vw, 44px); margin: 8px 0 12px; }
+    h2 { font-size: clamp(24px, 7vw, 36px); margin: 8px 0 15px; }
+
+    p {
+      font-size: 18px;
+      line-height: 1.65;
+      margin: 10px auto;
+      max-width: 450px;
+    }
+
+    .small   { font-size: 14px; opacity: 0.75; }
+    .emoji   { font-size: 55px; }
+    .message { font-size: clamp(23px, 6vw, 34px); font-weight: bold; line-height: 1.45; color: #6d2848; }
+
+    /* ---------- Inputs & Buttons ---------- */
+    input {
+      width: 100%;
+      padding: 16px;
+      margin: 18px 0 10px;
+      border: 1px solid #efb6cc;
+      border-radius: 18px;
+      font-size: 18px;
+      text-align: center;
+      outline: none;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 24px;
+      font-size: 17px;
+      font-weight: 700;
+      background: #e95d91;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(233, 93, 145, 0.25);
+      cursor: pointer;
+    }
+    button:active { transform: scale(0.97); }
+
+    .error  { height: 25px; color: #c53c68; font-size: 14px; }
+    .no-msg { min-height: 32px; font-weight: bold; color: #b62d61; }
+
+    /* ---------- Gift ---------- */
+    .gift {
+      display: inline-block;
+      font-size: 110px;
+      cursor: pointer;
+      animation: bob 1.8s infinite;
+    }
+    @keyframes bob { 50% { transform: translateY(-10px) rotate(2deg); } }
+
+    /* ---------- Gallery ---------- */
+    .gallery {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 22px;
+    }
+    .memory {
+      background: #fff;
+      padding: 8px 8px 14px;
+      border-radius: 8px;
+      box-shadow: 0 8px 25px rgba(80, 35, 55, 0.12);
+    }
+    .memory img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    .caption { font-size: 14px; margin-top: 9px; line-height: 1.35; }
+
+    /* ---------- Open When envelopes ---------- */
+    .envelopes { display: grid; gap: 12px; margin-top: 20px; }
+
+    .env {
+      padding: 17px;
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid #f2bfd2;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 5px 18px rgba(100, 40, 65, 0.08);
+    }
+    .env strong { display: block; font-size: 17px; }
+
+    .note {
+      display: none;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #e4a9bf;
+      line-height: 1.5;
+    }
+
+    /* ---------- Final screen ---------- */
+    .final-photo {
+      width: 100%;
+      margin: 18px 0;
+      border-radius: 24px;
+      box-shadow: 0 12px 35px rgba(90, 30, 60, 0.2);
+    }
+    .signature { margin-top: 15px; font-size: 22px; font-weight: bold; color: #b13e6c; }
+
+    /* ---------- Floating hearts ---------- */
+    .heart {
+      position: fixed;
+      bottom: -30px;
+      opacity: 0.8;
+      pointer-events: none;
+      animation: float 6s linear infinite;
+    }
+    @keyframes float { to { transform: translateY(-110vh); opacity: 0; } }
+  </style>
+</head>
+
+<body>
+  <div id="hearts"></div>
+
+  <!-- 1. Secret code -->
+  <section class="screen active" id="secret">
+    <div class="card">
+      <div class="emoji">🔐</div>
+      <div class="small">A LITTLE SECRET FOR YOU</div>
+      <h1>Only my bestie can unlock this… 🫶</h1>
+      <p>There's something waiting inside. 💗</p>
+      <input id="code" type="text" placeholder="Enter Secret Code" autocomplete="off">
+      <button onclick="unlock()">Unlock 💌</button>
+      <div class="error" id="error"></div>
+    </div>
+  </section>
+
+  <!-- 2. Gift -->
+  <section class="screen" id="gift">
+    <div class="card">
+      <div class="small">YOU UNLOCKED IT 🎉</div>
+      <h1>THIS IS FOR YOU 💗</h1>
+      <p>Tap the gift… 🎁</p>
+      <div class="gift" onclick="show('message')">🎁</div>
+    </div>
+  </section>
+
+  <!-- 3. Message -->
+  <section class="screen" id="message">
+    <div class="card">
+      <div class="emoji">💌</div>
+      <p class="message">No matter how many people I meet, you'll always have a special place in my heart. 💗🐒🫶</p>
+      <button onclick="show('memories')">Our Memories 📸</button>
+    </div>
+  </section>
+
+  <!-- 4. Memories -->
+  <section class="screen" id="memories">
+    <div class="card">
+      <h2>Our Memories 📸</h2>
+      <p class="small">Little moments. Big memories. Forever ours. 🫶</p>
+      <div class="gallery" id="gallery"></div>
+      <button style="margin-top:24px" onclick="show('openwhen')">Open When… 💌</button>
+    </div>
+  </section>
+
+  <!-- 5. Open When -->
+  <section class="screen" id="openwhen">
+    <div class="card">
+      <h2>Open When… 💌</h2>
+      <p class="small">Tap an envelope whenever you need it. 🥹</p>
+
+      <div class="envelopes">
+        <div class="env" onclick="toggleNote(this)">
+          <strong>🥹 Open when you miss me</strong>
+          <div class="note">Distance असलं तरी, तू माझ्यापासून कधीच दूर नाहीस. 🫶</div>
+        </div>
+        <div class="env" onclick="toggleNote(this)">
+          <strong>😔 Open when you're sad</strong>
+          <div class="note">आज smile करायची इच्छा नसली तरी चालेल… पण लक्षात ठेव, I'm always here. 🤍</div>
+        </div>
+        <div class="env" onclick="toggleNote(this)">
+          <strong>😂 Open when you need a smile</strong>
+          <div class="note">आपले वेडे moments आठव… आणि हसायला सुरुवात कर. 😂🐒</div>
+        </div>
+        <div class="env" onclick="toggleNote(this)">
+          <strong>💗 Open when you want to know what you mean to me</strong>
+          <div class="note">You're not just a friend. You're one of those people I never want to lose. 🥹</div>
+        </div>
+        <div class="env" onclick="toggleNote(this)">
+          <strong>💌 Open when you reach the end…</strong>
+          <div class="note">One last little question is waiting for you… 👀</div>
+        </div>
+      </div>
+
+      <button style="margin-top:20px" onclick="show('question')">One Last Question 💗</button>
+    </div>
+  </section>
+
+  <!-- 6. Question -->
+  <section class="screen" id="question">
+    <div class="card">
+      <div class="emoji">🥹</div>
+      <h2>Would you still choose me as your bestie?</h2>
+      <p class="small">Think carefully… 😌</p>
+      <button onclick="show('final')">YES 💗</button>
+      <button onclick="nope()">NO 😈</button>
+      <div class="no-msg" id="noMsg"></div>
+    </div>
+  </section>
+
+  <!-- 7. Final -->
+  <section class="screen" id="final">
+    <div class="card">
+      <div style="font-size:45px">🥹💌</div>
+      <h2>And just one last thing…</h2>
+      <p class="message" style="font-size:23px">
+        Thank you for being my person.<br>
+        For every laugh, every stupid moment, every memory…<br>
+        I'm genuinely lucky to have you. 🫶<br><br>
+        In every version of my life,<br>
+        I hope I find you again. ♾️
+      </p>
+      <img id="finalPhoto" class="final-photo" alt="Our special memory">
+      <div class="signature">Forever &amp; always, bestie. 💗🐒♾️</div>
+    </div>
+  </section>
+
+  <script>
+    // ---------- Settings ----------
+    const SECRET_CODE = "khulpawya";
+
+    const photos = [
+      { src: "images/1.jpg", caption: "Just us, being us. 🫶" },
+      { src: "images/2.jpg", caption: "A moment I'll always keep. 💗" },
+      { src: "images/3.jpg", caption: "Some memories never fade. ✨" },
+      { src: "images/4.jpg", caption: "No words, just us. 🤍" },
+      { src: "images/5.jpg", caption: "Forever grateful for this. 🥹" },
+      { src: "images/6.jpg", caption: "My favorite kind of chaos. 🐒" },
+      { src: "images/7.jpg", caption: "One memory, a thousand feelings. 💗" }
+    ];
+
+    // ---------- Build gallery ----------
+    document.getElementById("gallery").innerHTML = photos
+      .map(p => `
+        <div class="memory">
+          <img src="${p.src}" alt="Bestie memory" loading="lazy">
+          <div class="caption">${p.caption}</div>
+        </div>`)
+      .join("");
+
+    document.getElementById("finalPhoto").src = photos[0].src;
+
+    // ---------- Navigation ----------
+    function show(id) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      window.scrollTo(0, 0);
+    }
+
+    // ---------- Secret code ----------
+    function unlock() {
+      const value = document.getElementById("code").value.trim().toLowerCase();
+      if (value === SECRET_CODE) {
+        show("gift");
+      } else {
+        document.getElementById("error").textContent = "Hmm… that's not our secret 😏 Try again!";
+      }
+    }
+
+    document.getElementById("code").addEventListener("keydown", e => {
+      if (e.key === "Enter") unlock();
+    });
+
+    // ---------- Open When notes ----------
+    function toggleNote(el) {
+      const note = el.querySelector(".note");
+      note.style.display = note.style.display === "block" ? "none" : "block";
+    }
+
+    // ---------- NO button ----------
+    function nope() {
+      document.getElementById("noMsg").textContent =
+        "Excuse me?! 😭😂 You don't have a choice. You're stuck with me forever! 🐒♾️";
+    }
+
+    // ---------- Floating hearts ----------
+    const emojis = ["💗", "🫶", "💕", "✨"];
+    const heartsBox = document.getElementById("hearts");
+
+    for (let i = 0; i < 16; i++) {
+      const h = document.createElement("span");
+      h.className = "heart";
+      h.textContent = emojis[i % emojis.length];
+      h.style.left = Math.random() * 100 + "%";
+      h.style.animationDelay = Math.random() * 5 + "s";
+      h.style.fontSize = 14 + Math.random() * 18 + "px";
+      heartsBox.appendChild(h);
+    }
+  </script>
+</body>
+</html>
